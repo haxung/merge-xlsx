@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "merge-xlsx"
+version = "0.1.0"
+description = "A custom tool for merge and format excels."
+authors = ["haxung <hasafox@163.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "merge_xlsx"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
