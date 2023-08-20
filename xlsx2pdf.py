@@ -7,8 +7,9 @@ import textwrap
 
 import openpyxl
 import unicodedata
-import win32com.client as win32
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+import win32com
+import win32com.client
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side, numbers
 from openpyxl.worksheet.pagebreak import Break
 
 height = 35
@@ -67,18 +68,18 @@ def regular_border(ws, start_row, end_row, start_col=1, end_col=6):
 		for cell in row:
 			if cell.column == start_col:
 				cell.border += Border(
-					left=edge.left, 
+					left=edge.left,
 					right=cell_border.right,
 					top=cell_border.top,
 					bottom=cell_border.bottom
-					)
+				)
 			if cell.column == end_col:
 				cell.border += Border(
-					left=cell_border.left, 
+					left=cell_border.left,
 					right=edge.right,
 					top=cell_border.top,
 					bottom=cell_border.bottom
-					)
+				)
 
 
 def regular_border_inside(ws, start_row, end_row, start_col=1, end_col=6):
@@ -205,8 +206,6 @@ def deal_excel(excel_path, day):
 			if cell.value is not None:
 				data_dict["info"].append(cell.value)
 
-		# if len(data_dict["info"]) == 6:
-		# 	continue
 		if len(data_dict["info"]) == 5:
 			data_dict["info"].append(day)
 		elif len(data_dict["info"]) < 5:
@@ -273,13 +272,13 @@ def remove_file(file_path):
 def sort_string_array(strs, order):
 	# 自定义比较函数
 	def compare(s1, s2):
-		a , b = 0, 0
+		a, b = 0, 0
 		for i, char in enumerate(order):
 			if char in s1:
 				a = i
 			if char in s2:
 				b = i
-    
+
 		return a - b
 
 	# 使用自定义比较函数排序
@@ -363,6 +362,9 @@ def merge_excel(excel_dir_path, out_excel_path, order, week_range, day):
 		if ws.row_dimensions[row].height is None:
 			ws.row_dimensions[row].height = cal_height(ws, row)
 
+	for row in ws.iter_rows(min_row=2, min_col=4, max_col=4, max_row=ws.max_row):
+		for cell in row:
+			cell.number_format = numbers.FORMAT_PERCENTAGE
 	wb.save(out_excel_path)
 	wb.close()
 
@@ -458,17 +460,17 @@ def write_backup(ws, row, data_list):
 
 def xlsx2xlsm(in_xlsx_path, out_pdf_path, vba_path):
 	xlsm_path = re.sub("xlsx", "xlsm", in_xlsx_path)
-	if remove_file(xlsm_path) is False or remove_file(out_pdf_path) is False:
-		return
+
 	# 打开Excel应用程序
-	excel_app = win32.gencache.EnsureDispatch('Excel.Application')
+	excel_app = win32com.client.Dispatch('Excel.Application')
 	excel_app.Visible = False
 
 	wb = excel_app.Workbooks.Open(os.path.abspath(in_xlsx_path))
 	# 保存为xlsm文件格
 	wb.SaveAs(os.path.abspath(xlsm_path), FileFormat=52)
-	# remove_file(in_xlsx_path)
-	wb.Close()
+
+	# 关闭Excel应用程序
+	excel_app.Quit()
 
 	with open("D:/merge-xlsx/merge.vba", 'r', encoding='utf-8') as f:
 		contents = f.read()
@@ -495,7 +497,7 @@ def get_time():
 	# 将日期字符串合并为日期范围字符串
 	week_range = f'{start_date_str}-{end_date_str}'
 	fri_day = fri_date_str.strftime('%Y年%m月%d日')
-	
+
 	return week_range, fri_day
 
 
@@ -508,9 +510,12 @@ def main():
 	# 添加命令行参数
 	parser.add_argument("-f", "--folder", default="D:/work/week-report", help="folder path for excels")
 	parser.add_argument("-o", "--order", default="林鲁单冀坤朱茗马涂", help="excel deal order")
-	parser.add_argument("-x", "--xlsx", default="D:/work/week-report-output/{}.xlsx".format(file_name), help="output excel path")
-	parser.add_argument("-p", "--pdf", default="D:/work/week-report-output/{}.pdf".format(file_name), help="output pdf path")
-	parser.add_argument("-v", "--vba", default="D:/work/week-report-output/{}.vba".format(file_name), help="output vba path")
+	parser.add_argument("-x", "--xlsx", default="D:/work/week-report-output/{}.xlsx".format(file_name),
+	                    help="output excel path")
+	parser.add_argument("-p", "--pdf", default="D:/work/week-report-output/{}.pdf".format(file_name),
+	                    help="output pdf path")
+	parser.add_argument("-v", "--vba", default="D:/work/week-report-output/{}.vba".format(file_name),
+	                    help="output vba path")
 	parser.add_argument("-w", "--week", default=week_range, help="week range")
 	parser.add_argument("-d", "--day", default=fri_day, help="personal day")
 

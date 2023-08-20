@@ -1,2 +1,2 @@
 openpyxl==3.1.2
-pywin32==304
+pywin32==306
