@@ -509,7 +509,7 @@ def main():
 
 	# 添加命令行参数
 	parser.add_argument("-f", "--folder", default="D:/work/week-report", help="folder path for excels")
-	parser.add_argument("-o", "--order", default="林鲁单冀坤朱茗马涂", help="excel deal order")
+	parser.add_argument("-o", "--order", default="林鲁冀坤潘朱茗马涂", help="excel deal order")
 	parser.add_argument("-x", "--xlsx", default="D:/work/week-report-output/{}.xlsx".format(file_name),
 	                    help="output excel path")
 	parser.add_argument("-p", "--pdf", default="D:/work/week-report-output/{}.pdf".format(file_name),
