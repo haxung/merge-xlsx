@@ -153,7 +153,7 @@ def regular_border_inside(ws, start_row, end_row, start_col=1, end_col=6):
 def get_row(ws, start_row, target):
 	for row in ws.iter_rows(min_row=start_row, max_col=ws.max_column, max_row=ws.max_row):
 		for cell in row:
-			if cell.value == target:
+			if isinstance(cell.value, str) and cell.value.strip() == target.strip():
 				return cell.row
 	return -1
 
